@@ -61,4 +61,3 @@ install_zsh () {
         fi
     fi
 }
-install_zsh
