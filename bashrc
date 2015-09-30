@@ -2,7 +2,7 @@
 alias ls='ls -G'
 alias la='ls -a'
 # get to workspace faster
-alias cs112='cd "/Users/peterflockhart/Dropbox/Higher Education/Spring 2015/CS112"'
+alias linear='cd "/Users/peterflockhart/Dropbox/Higher Education/Fall 2015/LInear Algebra"'
 alias cs235='cd "/Users/peterflockhart/Dropbox/Higher Education/Spring 2015/CS 235"'
 # run python faster
 alias py='python3'
@@ -10,7 +10,7 @@ alias py='python3'
 alias pi='python3 -i'
 # gtfo faster
 alias cd.='cd ..'
-alias bu='pflock@csa2.bu.edu'
+alias bu='ssh pflock@csa2.bu.edu'
 
 # use updated vim
 alias vim='/Applications/MacVim.app/Contents/MacOS/vim'
@@ -27,6 +27,5 @@ BLUE="\[\033[0;34m\]"
 LIGHT_PURPLE="\[\033[1;35m\]"
 LIGHT_CYAN="\[\033[1;36m\]"
 WHITE="\[\033[00m\]"
-export PS1="$LIGHT_GREEN\h$LIGHT_CYAN \w$WHITE:$YELLOW\$(parse_git_branch)$WHITE\$"
-
+export PS1="$LIGHT_GREEN\u 🍰 $LIGHT_CYAN \w$WHITE:$YELLOW\$(parse_git_branch)$WHITE\$"
 

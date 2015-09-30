@@ -9,9 +9,9 @@ set modifiable
 " colorscheme of choice
 syntax enable
 set t_Co=256
-set background=dark
-let g:solarized_termcolors=256
-colorscheme smyck
+"set background=dark
+"let g:solarized_termcolors=256
+colorscheme behelit
 hi Normal ctermbg=NONE
 
 " let vundle handle my (plugins)
@@ -37,8 +37,9 @@ Plugin 'aflock/vim-colorpack'
 Plugin 'Syntastic'
 " specific for looking fresh af
 Plugin 'altercation/vim-colors-solarized'
+Plugin 'atweiden/vim-colors-behelit'
 " Sick completion engine so I do less work
-Plugin 'Valloric/YouCompleteMe'
+"Plugin 'Valloric/YouCompleteMe' "doesn't work idk why
 " Easy motion
 Plugin 'Lokaltog/vim-easymotion'
 " visually identify indent level
