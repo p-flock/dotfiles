@@ -6,6 +6,9 @@ autocmd BufRead,BufWrite * if ! &bin | silent! %s/\s\+$//ge | endif
 " so shit will work
 set modifiable
 
+" see commands in the botton
+set showcmd
+
 " colorscheme of choice
 syntax enable
 set t_Co=256
@@ -31,14 +34,14 @@ Plugin 'gmarik/vundle'
 "
 " close my parenthesis for me
 Plugin 'Raimondi/delimitMate'
-" So it looks fresh af
+" So it looks fresh
 Plugin 'aflock/vim-colorpack'
 " checks for errors
 Plugin 'Syntastic'
-" specific for looking fresh af
+" specific for looking fresh
 Plugin 'altercation/vim-colors-solarized'
 Plugin 'atweiden/vim-colors-behelit'
-" Sick completion engine so I do less work
+" YouCompleteMe but it doesn't work...
 "Plugin 'Valloric/YouCompleteMe' "doesn't work idk why
 " Easy motion
 Plugin 'Lokaltog/vim-easymotion'
