@@ -40,6 +40,9 @@ Plugin 'aflock/vim-colorpack'
 Plugin 'Syntastic'
 " specific for looking fresh
 Plugin 'altercation/vim-colors-solarized'
+" Fugitive - nice vim commands
+Plugin 'tpope/vim-fugitive'
+" color scheme
 Plugin 'atweiden/vim-colors-behelit'
 " YouCompleteMe but it doesn't work...
 "Plugin 'Valloric/YouCompleteMe' "doesn't work idk why
@@ -61,8 +64,9 @@ Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets'
 " Lumberjack colors
 Plugin 'yamafaktory/lumberjack.vim'
-" Orgasmic commenting, I'm told
+" commenting
 Plugin 'scrooloose/nerdcommenter'
+
 " Gotham colorscheme when I feel like Brooding
 Plugin 'whatyouhide/vim-gotham'
 " in case things get *too* easy
@@ -80,14 +84,19 @@ syntax on
 filetype plugin indent on
 set nocompatible
 set number
-"set relativenumber
-
+" leader is comma
+let mapleader=","
 " enable all Python syntax highlighting features
 let python_highlight_all = 1
 
 "mappings"
 "jk gets to escape
 inoremap jk <Esc>
+nnoremap <leader>w :set wrap!<CR>
+
+" ; is : so I don't have to shift
+nnoremap ; :
+nnoremap : ;
 
 " <Ctrl-l> redraws the screen and removes any search highlighting.
 nnoremap <silent> <C-l> :nohl<CR><C-l>
@@ -95,8 +104,11 @@ nnoremap <silent> <C-l> :nohl<CR><C-l>
 " (comma-m) map to save my code and compile it (Java)
 map <silent> ,m :wall<CR>:make<CR>
 
+"swap areas of text
+vnoremap <C-X> <Esc>`.`gvP``P
+
 " NerdTree Toggle
-nmap t :NERDTreeToggle<CR>
+nnoremap t :NERDTreeToggle<CR>
 "nmap tt :NerdTreeClose<CR> " turns out not necessary
 
 " Trigger Ultisnips

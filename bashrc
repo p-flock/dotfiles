@@ -12,12 +12,18 @@ alias pi='python3 -i'
 alias cd.='cd ..'
 alias bu='ssh pflock@csa2.bu.edu'
 
+# YOLO = sudo
+alias yolo='sudo'
+#alias YOLO='sudo `!!`'
+alias YOLO='sudo $(fc -ln -1)'
+
 # use updated vim
 alias vim='/Applications/MacVim.app/Contents/MacOS/vim'
 
 function parse_git_branch {
     echo git branch> /dev/null |sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
 }
+# git branch
 
 RED="\[\033[0;31m\]"
 GREEN="\[\033[0;31m\]"
