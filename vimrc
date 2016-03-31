@@ -14,7 +14,8 @@ syntax enable
 set t_Co=256
 "set background=dark
 "let g:solarized_termcolors=256
-colorscheme behelit
+let g:seoul256_background=233
+colorscheme seoul256
 hi Normal ctermbg=NONE
 
 " let vundle handle my (plugins)
@@ -75,6 +76,10 @@ Plugin 'wikitopian/hardmode'
 Plugin 'jaxbot/semantic-highlight.vim'
 " goyo, distraction free writing
 Plugin 'junegunn/goyo.vim'
+"go in vim
+Plugin 'fatih/vim-go'
+"seoul colorscheme
+Plugin 'junegunn/seoul256.vim'
 
 call vundle#end()
 

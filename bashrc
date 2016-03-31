@@ -17,8 +17,7 @@ alias yolo='sudo'
 #alias YOLO='sudo `!!`'
 alias YOLO='sudo $(fc -ln -1)'
 
-# use updated vim
-alias vim='/Applications/MacVim.app/Contents/MacOS/vim'
+
 
 function parse_git_branch {
     echo git branch> /dev/null |sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
@@ -34,4 +33,3 @@ LIGHT_PURPLE="\[\033[1;35m\]"
 LIGHT_CYAN="\[\033[1;36m\]"
 WHITE="\[\033[00m\]"
 export PS1="$LIGHT_GREEN\u 🍰 $LIGHT_CYAN \w$WHITE:$YELLOW\$(parse_git_branch)$WHITE\$"
-
