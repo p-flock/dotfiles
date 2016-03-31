@@ -76,6 +76,7 @@ Plugin 'jaxbot/semantic-highlight.vim'
 " goyo, distraction free writing
 Plugin 'junegunn/goyo.vim'
 
+
 call vundle#end()
 
 

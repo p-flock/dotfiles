@@ -11,6 +11,8 @@ alias pi='python3 -i'
 # gtfo faster
 alias cd.='cd ..'
 alias bu='ssh pflock@csa2.bu.edu'
+alias bu3='ssh pflock@csa3.bu.edu'
+alias bu1='ssh pflock@csa1.bu.edu'
 
 # YOLO = sudo
 alias yolo='sudo'
