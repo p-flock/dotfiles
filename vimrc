@@ -80,6 +80,8 @@ Plugin 'junegunn/goyo.vim'
 Plugin 'fatih/vim-go'
 "seoul colorscheme
 Plugin 'junegunn/seoul256.vim'
+"powerline status bar
+Plugin 'powerline/powerline'
 
 call vundle#end()
 
