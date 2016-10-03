@@ -1,3 +1,6 @@
+# use vim 7.4
+alias vim='/Applications/MacVim.app/Contents/MacOS/Vim'
+
 # keymaps
 alias ls='ls -G'
 alias la='ls -a'
@@ -14,13 +17,20 @@ alias bu='ssh pflock@csa2.bu.edu'
 alias bu3='ssh pflock@csa3.bu.edu'
 alias bu1='ssh pflock@csa1.bu.edu'
 
+# crontab needs editor specified
+alias cront='env EDITOR=vim crontab -e'
+
+#set $GOPATH
+export GOPATH=$HOME/work
+
 # YOLO = sudo
 alias yolo='sudo'
-#alias YOLO='sudo `!!`'
+# YOLO='sudo `!!`'
 alias YOLO='sudo $(fc -ln -1)'
+# custom binding from Ctr-k to gif
+bind '"\C-k"':"\"gifme\C-m\""
 
-# use updated vim
-alias vim='/Applications/MacVim.app/Contents/MacOS/vim'
+
 
 function parse_git_branch {
     echo git branch> /dev/null |sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
@@ -37,3 +47,6 @@ LIGHT_CYAN="\[\033[1;36m\]"
 WHITE="\[\033[00m\]"
 export PS1="$LIGHT_GREEN\u 🍰 $LIGHT_CYAN \w$WHITE:$YELLOW\$(parse_git_branch)$WHITE\$"
 
+
+# display random gif plz
+gifme

@@ -6,7 +6,7 @@ autocmd BufRead,BufWrite * if ! &bin | silent! %s/\s\+$//ge | endif
 " so shit will work
 set modifiable
 
-" see commands in the botton
+" see commands in the bottom
 set showcmd
 
 " colorscheme of choice
@@ -14,7 +14,8 @@ syntax enable
 set t_Co=256
 "set background=dark
 "let g:solarized_termcolors=256
-colorscheme behelit
+let g:seoul256_background=233
+colorscheme seoul256
 hi Normal ctermbg=NONE
 
 " let vundle handle my (plugins)
@@ -75,6 +76,12 @@ Plugin 'wikitopian/hardmode'
 Plugin 'jaxbot/semantic-highlight.vim'
 " goyo, distraction free writing
 Plugin 'junegunn/goyo.vim'
+"go in vim
+Plugin 'fatih/vim-go'
+"seoul colorscheme
+Plugin 'junegunn/seoul256.vim'
+" Notes/wikiing
+Plugin 'vimwiki/vimwiki'
 
 
 call vundle#end()
@@ -93,7 +100,7 @@ let python_highlight_all = 1
 "mappings"
 "jk gets to escape
 inoremap jk <Esc>
-nnoremap <leader>w :set wrap!<CR>
+nnoremap <leader>e :set wrap!<CR>
 
 " ; is : so I don't have to shift
 nnoremap ; :
@@ -109,13 +116,13 @@ map <silent> ,m :wall<CR>:make<CR>
 vnoremap <C-X> <Esc>`.`gvP``P
 
 " NerdTree Toggle
-nnoremap t :NERDTreeToggle<CR>
+nnoremap <Leader>n :NERDTreeToggle<CR>
 "nmap tt :NerdTreeClose<CR> " turns out not necessary
 
 " Trigger Ultisnips
-let g:UltiSnipsExpandTrigger="<c-b>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+"let g:UltiSnipsExpandTrigger="<c-b>"
+"let g:UltiSnipsJumpForwardTrigger="<c-b>"
+"let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 " UltiSnipsEdit splits window
 let g:UltiSnipsEditSplit="vertical"
@@ -152,8 +159,8 @@ set splitbelow
 set splitright
 
 " Ever want to write java? cool, compile and run in buffer
-" F9/F10 compile/run default file.
-" F11/F12 compile/run alternate file.
+"F9/F10 compile/run default file.
+"F11/F12 compile/run alternate file.
 
 map <F9> :set makeprg=javac\ %<CR>:make<CR>
 map <F10> :!echo %\|awk -F. '{print $1}'\|xargs java<CR>
