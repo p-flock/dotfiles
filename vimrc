@@ -9,84 +9,86 @@ set modifiable
 " see commands in the bottom
 set showcmd
 
+set noswapfile
+
+" save files when focus is lost
+au FocusLost * :wa
+filetype off                  " required
+
+
+call plug#begin('~/.local/share/nvim/plugged')
+" pretty typing for notes etc
+Plug 'junegunn/goyo.vim'
+
+"comment me
+Plug 'scrooloose/nerdcommenter'
+" colo scheme
+Plug 'morhetz/gruvbox'
+"git stuff
+Plug 'jreybert/vimagit'
+Plug 'tpope/vim-fugitive'
+
+" assuming your using vim-plug: https://github.com/junegunn/vim-plug
+Plug 'ncm2/ncm2'
+"ncm2 requires nvim-yarp
+Plug 'roxma/nvim-yarp'
+"some completion sources
+
+Plug 'ncm2/ncm2-bufword'
+Plug 'ncm2/ncm2-path'
+Plug 'ncm2/ncm2-jedi'
+Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}
+
+Plug 'vim-airline/vim-airline'
+" vim wiki
+Plug 'https://github.com/vimwiki/vimwiki'
+
+"Plug 'RRethy/vim-illuminate'
+"linting
+Plug 'w0rp/ale'
+
+"ctags viewing
+Plug 'majutsushi/tagbar'
+
+" brrrrrackt matching
+Plug 'Raimondi/delimitMate'
+
+call plug#end()
+
+" airline
+"let g:airline_extensions = ['vimagit']
+let g:airline#extensions#vimagit#enabled = 1
+let g:airline#extensions#fugitive = 1
+
+"Linting for python and js
+" After this is configured, :ALEFix will try and fix your JS code with ESLint.
+let g:ale_fixers = {
+\   'javascript': ['eslint'],
+\   'python': ['autopep8'],
+\   'haskell': ['ghc'],
+\}
+" Use <TAB> to select the popup menu:
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+" enable ncm2 for all buffers
+autocmd BufEnter * call ncm2#enable_for_buffer()
+
+" :help Ncm2PopupOpen for more information
+set completeopt=noinsert,menuone
+
+
+let g:Illuminate_delay = 500
+"Don't highlight word under cursor (default: 1)
+let g:Illuminate_highlightUnderCursor = 0
+
 " colorscheme of choice
 syntax enable
 set t_Co=256
-"set background=dark
-"let g:solarized_termcolors=256
-let g:seoul256_background=233
-colorscheme seoul256
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+set background=dark
 hi Normal ctermbg=NONE
-
-" let vundle handle my (plugins)
-set nocompatible              " be iMproved, required
-filetype off                  " required
-
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
-" " alternatively, pass a path where Vundle should install plugins
-" "call vundle#begin('~/some/path/here')
+colorscheme gruvbox
 "
-" " let Vundle manage Vundle, required
-Plugin 'gmarik/vundle'
-
-" My Bundles
-"
-" close my parenthesis for me
-Plugin 'Raimondi/delimitMate'
-" So it looks fresh
-Plugin 'aflock/vim-colorpack'
-" checks for errors
-Plugin 'Syntastic'
-" specific for looking fresh
-Plugin 'altercation/vim-colors-solarized'
-" Fugitive - nice vim commands
-Plugin 'tpope/vim-fugitive'
-" color scheme
-Plugin 'atweiden/vim-colors-behelit'
-" YouCompleteMe but it doesn't work...
-"Plugin 'Valloric/YouCompleteMe' "doesn't work idk why
-" Easy motion
-Plugin 'Lokaltog/vim-easymotion'
-" visually identify indent level
-Plugin 'nathanaelkane/vim-indent-guides'
-" NerdTree but is broken?
-Plugin 'scrooloose/nerdtree'
-" Snippets
-Plugin 'UltiSnips'
-" Indent lines
-Plugin 'Yggdroot/indentLine'
-" Supertab
-Plugin 'Supertab'
-" Track the engine.
-Plugin 'SirVer/ultisnips'
-" Snippets are separated from the engine.
-Plugin 'honza/vim-snippets'
-" Lumberjack colors
-Plugin 'yamafaktory/lumberjack.vim'
-" commenting
-Plugin 'scrooloose/nerdcommenter'
-
-" Gotham colorscheme when I feel like Brooding
-Plugin 'whatyouhide/vim-gotham'
-" in case things get *too* easy
-Plugin 'wikitopian/hardmode'
-" semantic highlighting
-Plugin 'jaxbot/semantic-highlight.vim'
-" goyo, distraction free writing
-Plugin 'junegunn/goyo.vim'
-"go in vim
-Plugin 'fatih/vim-go'
-"seoul colorscheme
-Plugin 'junegunn/seoul256.vim'
-" Notes/wikiing
-Plugin 'vimwiki/vimwiki'
-
-
-call vundle#end()
-
-
 "turns syntax highlighting on
 syntax on
 filetype plugin indent on
@@ -101,31 +103,20 @@ let python_highlight_all = 1
 "jk gets to escape
 inoremap jk <Esc>
 nnoremap <leader>e :set wrap!<CR>
+" complete w/ tab for nvim completion manager
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " ; is : so I don't have to shift
 nnoremap ; :
 nnoremap : ;
 
-" <Ctrl-l> redraws the screen and removes any search highlighting.
-nnoremap <silent> <C-l> :nohl<CR><C-l>
 
 " (comma-m) map to save my code and compile it (Java)
 map <silent> ,m :wall<CR>:make<CR>
 
 "swap areas of text
 vnoremap <C-X> <Esc>`.`gvP``P
-
-" NerdTree Toggle
-nnoremap <Leader>n :NERDTreeToggle<CR>
-"nmap tt :NerdTreeClose<CR> " turns out not necessary
-
-" Trigger Ultisnips
-"let g:UltiSnipsExpandTrigger="<c-b>"
-"let g:UltiSnipsJumpForwardTrigger="<c-b>"
-"let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-
-" UltiSnipsEdit splits window
-let g:UltiSnipsEditSplit="vertical"
 
 " split management
 nnoremap <C-J> <C-W><C-J>
@@ -146,42 +137,32 @@ set mouse=a
 " toggle semantic highlighting with \s
 nnoremap <Leader>s :SemanticHighlightToggle<cr>
 
+" esc terminal mode in a sane way
+tnoremap <c-\> <c-\><c-n>
+
 " Spaces are better than a tab character
 set expandtab
 set smarttab
 
-set shiftwidth=4
-set softtabstop=4
-set tabstop=4
+set shiftwidth=2
+set softtabstop=2
+set tabstop=2
 
 " split management
 set splitbelow
 set splitright
 
-" Ever want to write java? cool, compile and run in buffer
-"F9/F10 compile/run default file.
-"F11/F12 compile/run alternate file.
 
-map <F9> :set makeprg=javac\ %<CR>:make<CR>
-map <F10> :!echo %\|awk -F. '{print $1}'\|xargs java<CR>
-map <F11> :set makeprg=javac\ #<CR>:make<CR>
-map <F12> :!echo #\|awk -F. '{print $1}'\|xargs java<CR>
+" netrw / file browser stuff
+let g:netrw_browse_split = 3
+let g:netrw_liststyle = 3
+let g:netrw_winsize = 18
+" tab stuff
+nnoremap <C-M> :tabNext<cr>
 
-map! <F9> <Esc>:set makeprg=javac\ %<CR>:make<CR>
-map! <F10> <Esc>:!echo %\|awk -F. '{print $1}'\|xargs java<CR>
-map! <F11> <Esc>set makeprg=javac\ #<CR>:make<CR>
-map! <F12> <Esc>!echo #\|awk -F. '{print $1}'\|xargs java<CR>
+" vimwiki remaps
+nmap <Leader>wq <Plug>VimwikiVSplitLink
 
-" Tip: load a file into the default buffer, and its driver
-" " into the alternate buffer, then use F9/F12 to build/run.
-" " Note: # (alternate filename) isn't set until you :next to it!
-" " Tip2: You can make then run without hitting ENTER to continue. F9-F12
-"
-" " With these you can cl/cn/cp (quickfix commands) to browse the errors
-" " after you compile it with :make
-
-set makeprg=javac\ %
-set errorformat=%A:%f:%l:\ %m,%-Z%p^,%-C%.%#
 
 " " If two files are loaded, switch to the alternate file, then back.
 " " That sets # (the alternate file).
@@ -189,3 +170,4 @@ if argc() == 2
     n
     e #
 endif
+
