@@ -4,7 +4,7 @@ alias ls='ls -G'
 alias la='ls -a'
 # get to workspace faster
 # run python faster
-alias py='python3'
+alias python='usr/local/bin/python3'
 # run python interactive faster
 alias pi='python3 -i'
 # gtfo faster

@@ -34,7 +34,6 @@ Plug 'ncm2/ncm2'
 Plug 'roxma/nvim-yarp'
 "some completion sources
 
-Plug 'ncm2/ncm2-bufword'
 Plug 'ncm2/ncm2-path'
 Plug 'ncm2/ncm2-jedi'
 Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}
@@ -95,9 +94,10 @@ filetype plugin indent on
 set nocompatible
 set number
 " leader is comma
-let mapleader=","
+let mapleader="]"
 " enable all Python syntax highlighting features
 let python_highlight_all = 1
+
 
 "mappings"
 "jk gets to escape
@@ -111,9 +111,6 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 nnoremap ; :
 nnoremap : ;
 
-
-" (comma-m) map to save my code and compile it (Java)
-map <silent> ,m :wall<CR>:make<CR>
 
 "swap areas of text
 vnoremap <C-X> <Esc>`.`gvP``P
@@ -129,13 +126,11 @@ set mouse=a
 
 " Search mappings: These will make it so that going to the next one in a
 " search will center on the line it's found in.
- map N Nzz
- map n nzz
- map gg ggzz
- map G Gzz
+map N Nzz
+map n nzz
+map gg ggzz
+map G Gzz
 
-" toggle semantic highlighting with \s
-nnoremap <Leader>s :SemanticHighlightToggle<cr>
 
 " esc terminal mode in a sane way
 tnoremap <c-\> <c-\><c-n>
