@@ -19,6 +19,10 @@ function nv
   nvim
 end
 
+function lsd
+  ls -d */
+end
+
 alias cat='bat'
 alias git='hub'
 alias python='/usr/local/bin/python3'
@@ -43,3 +47,5 @@ function fish_prompt
       echo -n '└─ '
       set_color normal
 end
+
+set PATH $HOME/.cargo/bin $PATH

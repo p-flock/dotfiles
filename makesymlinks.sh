@@ -9,6 +9,8 @@
 dir=~/dotfiles                    # dotfiles directory
 olddir=~/dotfiles_old             # old dotfiles backup directory
 files="tmux.conf bashrc vimrc vim"    # list of files/folders to symlink in homedir
+fish_dir=~/.config/fish                    # fish dir
+fish_files="config.fish fish_variables"
 
 ##########
 
@@ -30,4 +32,9 @@ for file in $files; do
     ln -s $dir/$file ~/.$file
 done
 
-
+for file in $fish_files; do
+  echo "Moving fish config from $fish_dir to $olddir"
+  mv $fish_dir/$file ~/dotfiles_old
+  echo "Creating symlink to $file in fish config directory."
+  ln -s $dir/$file $fish_dir/$file
+done
