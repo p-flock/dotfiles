@@ -40,14 +40,17 @@ end
 
 
 function fish_prompt
-      set_color purple
-      #date "+%m/%d/%y"
-      echo "W̶̥̫̥͆ḛ̸̥̿ͅḽ̵̻͓̋̀͝c̶͙͈̗͛̐̀̏o̵̿̈́̄̉̚͜m̴̼̟̘̼̓ẹ̶̡͔͂̉̊̃͜͝ ̷̛̯̯̏Ḫ̵̣̫͒̽ó̵̯̽̕m̴̯̚e̷̺̝̦͒͋́͑:" (date)
-      echo
       set_color FF0
       echo '│'  (pwd) '>'
       echo -n '└─ '
       set_color normal
+end
+
+function fish_greeting
+      set_color purple
+      echo
+      echo "W̶̥̫̥͆ḛ̸̥̿ͅḽ̵̻͓̋̀͝c̶͙͈̗͛̐̀̏o̵̿̈́̄̉̚͜m̴̼̟̘̼̓ẹ̶̡͔͂̉̊̃͜͝ ̷̛̯̯̏Ḫ̵̣̫͒̽ó̵̯̽̕m̴̯̚e̷̺̝̦͒͋́͑:" (date)
+      echo
 end
 
 set PATH $HOME/.cargo/bin $PATH

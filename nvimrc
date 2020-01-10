@@ -94,7 +94,7 @@ filetype plugin indent on
 set nocompatible
 set number
 " leader is comma
-let mapleader="]"
+let mapleader=","
 " enable all Python syntax highlighting features
 let python_highlight_all = 1
 
