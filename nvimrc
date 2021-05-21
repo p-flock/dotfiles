@@ -12,7 +12,6 @@ set showcmd
 set noswapfile
 
 " save files when focus is lost
-au FocusLost * :wa
 filetype off                  " required
 
 
@@ -49,6 +48,8 @@ Plug 'w0rp/ale'
 "ctags viewing
 Plug 'majutsushi/tagbar'
 
+Plug 'rust-lang/rust.vim'
+
 " brrrrrackt matching
 Plug 'Raimondi/delimitMate'
 
@@ -69,6 +70,9 @@ let g:ale_fixers = {
 " Use <TAB> to select the popup menu:
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+" open tagbar with f8
+nmap <F8> :TagbarToggle<CR>
 " enable ncm2 for all buffers
 autocmd BufEnter * call ncm2#enable_for_buffer()
 

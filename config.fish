@@ -53,4 +53,5 @@ function fish_greeting
       echo
 end
 
+set PATH /usr/local/opt/gnu-sed/libexec/gnubin:$PATH
 set PATH $HOME/.cargo/bin $PATH
