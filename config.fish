@@ -23,9 +23,6 @@ function lsd
   ls -d */
 end
 
-alias cat='bat'
-alias git='hub'
-alias python='/usr/local/bin/python3'
 function vlc
   nvim -O (git log --pretty=format: --name-only -n 1)
 end
@@ -42,7 +39,7 @@ end
 function fish_prompt
       set_color FF0
       echo '│'  (pwd) '>'
-      echo -n '└─ '
+      echo -n '│ '
       set_color normal
 end
 
@@ -55,3 +52,7 @@ end
 
 set PATH /usr/local/opt/gnu-sed/libexec/gnubin:$PATH
 set PATH $HOME/.cargo/bin $PATH
+
+# Setting PATH for Python 3.9
+# The original version is saved in /Users/pflockhart/.config/fish/config.fish.pysave
+set -x PATH "/Library/Frameworks/Python.framework/Versions/3.9/bin" "$PATH"
