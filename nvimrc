@@ -11,6 +11,9 @@ set showcmd
 
 set noswapfile
 
+set ignorecase
+set smartcase
+
 " save files when focus is lost
 filetype off                  " required
 
@@ -19,10 +22,20 @@ call plug#begin('~/.local/share/nvim/plugged')
 " pretty typing for notes etc
 Plug 'junegunn/goyo.vim'
 
+" tree sitter and telescope
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
+Plug 'nvim-lua/popup.nvim'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
+
+" nerdtree
+Plug 'preservim/nerdtree'
 "comment me
 Plug 'scrooloose/nerdcommenter'
 " colo scheme
 Plug 'morhetz/gruvbox'
+Plug 'yashguptaz/calvera-dark.nvim'
+
 "git stuff
 Plug 'jreybert/vimagit'
 Plug 'tpope/vim-fugitive'
@@ -60,13 +73,16 @@ call plug#end()
 let g:airline#extensions#vimagit#enabled = 1
 let g:airline#extensions#fugitive = 1
 
-"Linting for python and js
-" After this is configured, :ALEFix will try and fix your JS code with ESLint.
-let g:ale_fixers = {
-\   'javascript': ['eslint'],
-\   'python': ['autopep8'],
-\   'haskell': ['ghc'],
-\}
+let g:ale_fixers = {'javascript': ['eslint']}
+let g:ale_linter_aliases = {'vue': ['vue', 'javascript']}
+let g:ale_linters = {'vue': ['eslint', 'vls']}
+" Enable completion where available.
+" This setting must be set before ALE is loaded.
+"
+" You should not turn this setting on if you wish to use ALE as a completion
+" source for other completion plugins, like Deoplete.
+let g:ale_completion_enabled = 1
+
 " Use <TAB> to select the popup menu:
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
@@ -80,9 +96,14 @@ autocmd BufEnter * call ncm2#enable_for_buffer()
 set completeopt=noinsert,menuone
 
 
+"NERDtree settings
+nnoremap <leader>t :NERDTreeFocus<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+
 let g:Illuminate_delay = 500
 "Don't highlight word under cursor (default: 1)
 let g:Illuminate_highlightUnderCursor = 0
+
 
 " colorscheme of choice
 syntax enable
@@ -103,6 +124,21 @@ let mapleader=","
 let python_highlight_all = 1
 
 
+" tree sitter stuff
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  highlight = {
+    enable = true,              -- false will disable the whole extension
+  },
+}
+EOF
+" telescope mappings
+"
+nnoremap <leader>ff <cmd>Telescope find_files<cr>
+nnoremap <leader>fg <cmd>Telescope live_grep<cr>
+nnoremap <leader>fb <cmd>Telescope buffers<cr>
+
 "mappings"
 "jk gets to escape
 inoremap jk <Esc>
@@ -115,9 +151,14 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 nnoremap ; :
 nnoremap : ;
 
+" ,ff to run ALEFix
+nnoremap <leader>af :ALEFix<CR>
 
-"swap areas of text
-vnoremap <C-X> <Esc>`.`gvP``P
+" leader r refreshes current file
+nnoremap <leader>r :e! %<CR>
+
+" open Magit buffer
+nnoremap <leader>g :Magit<CR>
 
 " split management
 nnoremap <C-J> <C-W><C-J>
@@ -158,9 +199,6 @@ let g:netrw_liststyle = 3
 let g:netrw_winsize = 18
 " tab stuff
 nnoremap <C-M> :tabNext<cr>
-
-" vimwiki remaps
-nmap <Leader>wq <Plug>VimwikiVSplitLink
 
 
 " " If two files are loaded, switch to the alternate file, then back.
