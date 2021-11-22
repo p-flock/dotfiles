@@ -32,23 +32,30 @@ Plug 'nvim-telescope/telescope.nvim'
 Plug 'preservim/nerdtree'
 "comment me
 Plug 'scrooloose/nerdcommenter'
+
+" vue syntax highlighting
+Plug 'posva/vim-vue'
+
 " colo scheme
 Plug 'morhetz/gruvbox'
 Plug 'yashguptaz/calvera-dark.nvim'
+Plug 'cocopon/iceberg.vim'
+Plug 'tomasr/molokai'
+Plug 'fmoralesc/molokayo'
+Plug 'sts10/vim-pink-moon'
 
 "git stuff
 Plug 'jreybert/vimagit'
 Plug 'tpope/vim-fugitive'
 
 " assuming your using vim-plug: https://github.com/junegunn/vim-plug
-Plug 'ncm2/ncm2'
+"Plug 'ncm2/ncm2'
 "ncm2 requires nvim-yarp
 Plug 'roxma/nvim-yarp'
 "some completion sources
 
-Plug 'ncm2/ncm2-path'
-Plug 'ncm2/ncm2-jedi'
-Plug 'ncm2/ncm2-tern',  {'do': 'npm install'}
+"Plug 'ncm2/ncm2-path'
+"Plug 'ncm2/ncm2-tern',  {'do':'npm install'}
 
 Plug 'vim-airline/vim-airline'
 " vim wiki
@@ -90,10 +97,10 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 " open tagbar with f8
 nmap <F8> :TagbarToggle<CR>
 " enable ncm2 for all buffers
-autocmd BufEnter * call ncm2#enable_for_buffer()
+"autocmd BufEnter * call ncm2#enable_for_buffer()
 
 " :help Ncm2PopupOpen for more information
-set completeopt=noinsert,menuone
+"set completeopt=noinsert,menuone
 
 
 "NERDtree settings
@@ -107,19 +114,20 @@ let g:Illuminate_highlightUnderCursor = 0
 
 " colorscheme of choice
 syntax enable
-set t_Co=256
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-set background=dark
-hi Normal ctermbg=NONE
-colorscheme gruvbox
+"set t_Co=256
+"let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+"set background=dark
+"hi Normal ctermbg=NONE
+colorscheme iceberg
 "
 "turns syntax highlighting on
 syntax on
 filetype plugin indent on
 set nocompatible
 set number
-" leader is comma
-let mapleader=","
+" space is leader
+noremap <Space> <Nop>
+map <Space> <Leader>
 " enable all Python syntax highlighting features
 let python_highlight_all = 1
 
@@ -133,11 +141,15 @@ require'nvim-treesitter.configs'.setup {
   },
 }
 EOF
+
 " telescope mappings
-"
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>df <cmd>lua require'telescope.builtin'.grep_string{}<cr>
+
+" highlight on yank
+au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
 
 "mappings"
 "jk gets to escape
@@ -151,11 +163,15 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 nnoremap ; :
 nnoremap : ;
 
-" ,ff to run ALEFix
+" <leader>af to run ALEFix , <leader>aa to go to first error
 nnoremap <leader>af :ALEFix<CR>
+nnoremap <leader>aa :ALEFirst<CR>
 
 " leader r refreshes current file
 nnoremap <leader>r :e! %<CR>
+
+" leader = to indent whole file
+nnoremap <leader>= gg=G``
 
 " open Magit buffer
 nnoremap <leader>g :Magit<CR>
@@ -204,7 +220,7 @@ nnoremap <C-M> :tabNext<cr>
 " " If two files are loaded, switch to the alternate file, then back.
 " " That sets # (the alternate file).
 if argc() == 2
-    n
-    e #
+  n
+  e #
 endif
 

@@ -25,6 +25,10 @@ function nv
   nvim
 end
 
+function fix
+  git commit --fixup HEAD
+end
+
 function s
   git status
 end
@@ -41,8 +45,20 @@ function vimlog
   git log | nvim -R -
 end
 
+function stash
+  git stash
+end
+
+function apply
+  git stash apply
+end
+
 function lsd
   ls -d */
+end
+
+function dockerize
+  docker run --rm -it -v $PWD:$PWD -w $PWD ubuntu bash
 end
 
 function vlc
