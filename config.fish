@@ -29,6 +29,10 @@ function fix
   git commit --fixup HEAD
 end
 
+function cover
+  open coverage/index.html
+end
+
 function s
   git status
 end
@@ -64,10 +68,12 @@ end
 function vlc
   nvim -O (git log --pretty=format: --name-only -n 1)
 end
+
 function gsup
   set BRANCH (git rev-parse --abbrev-ref HEAD 2>/dev/null);
   git push --set-upstream origin $BRANCH
 end
+
 function gpr
   gsup
   git pull-request -o -c
