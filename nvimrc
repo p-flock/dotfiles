@@ -14,27 +14,36 @@ set noswapfile
 set ignorecase
 set smartcase
 
+
 " save files when focus is lost
-filetype off                  " required
+filetype on                  " required
 
 
+let g:ale_set_balloons = 1
+let g:ale_hover_cursor = 1
+let g:ale_hover_to_floating_preview = 1
+let g:ale_floating_preview = 1
+let g:ale_cursor_detail = 1
+let g:ale_close_preview_on_insert = 1
+let g:ale_floating_window_border = ['│', '─', '╭', '╮', '╯', '╰']
 call plug#begin('~/.local/share/nvim/plugged')
 " pretty typing for notes etc
 Plug 'junegunn/goyo.vim'
 
 " tree sitter and telescope
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
+Plug 'nvim-treesitter/nvim-treesitter-context'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim'
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+Plug 'ThePrimeagen/harpoon'
+
+
 
 " nerdtree
 Plug 'preservim/nerdtree'
 "comment me
 Plug 'scrooloose/nerdcommenter'
-
-" vue syntax highlighting
-Plug 'posva/vim-vue'
 
 " colo scheme
 Plug 'morhetz/gruvbox'
@@ -43,6 +52,9 @@ Plug 'cocopon/iceberg.vim'
 Plug 'tomasr/molokai'
 Plug 'fmoralesc/molokayo'
 Plug 'sts10/vim-pink-moon'
+Plug 'bluz71/vim-moonfly-colors', { 'as': 'moonfly' }
+Plug 'bluz71/vim-nightfly-colors', { 'as': 'nightfly' }
+Plug 'tanvirtin/monokai.nvim'
 
 "git stuff
 Plug 'jreybert/vimagit'
@@ -63,7 +75,7 @@ Plug 'https://github.com/vimwiki/vimwiki'
 
 "Plug 'RRethy/vim-illuminate'
 "linting
-Plug 'w0rp/ale'
+Plug 'dense-analysis/ale'
 
 "ctags viewing
 Plug 'majutsushi/tagbar'
@@ -80,22 +92,35 @@ call plug#end()
 let g:airline#extensions#vimagit#enabled = 1
 let g:airline#extensions#fugitive = 1
 
-let g:ale_fixers = {'javascript': ['eslint']}
-let g:ale_linter_aliases = {'vue': ['vue', 'javascript']}
-let g:ale_linters = {'vue': ['eslint', 'vls']}
+let js_fixers = ['prettier', 'eslint']
+
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\   'javascript': js_fixers,
+\   'javascript.jsx': js_fixers,
+\   'typescript': js_fixers,
+\   'typescriptreact': js_fixers,
+\   'css': ['prettier'],
+\   'json': ['prettier'],
+\}
+
+
 " Enable completion where available.
 " This setting must be set before ALE is loaded.
 "
 " You should not turn this setting on if you wish to use ALE as a completion
 " source for other completion plugins, like Deoplete.
-let g:ale_completion_enabled = 1
+
+nnoremap <leader>sd :ALEGoToDefinition -vsplit<CR>
+nnoremap <leader>d :ALEGoToDefinition<CR>
+nnoremap <leader>a :ALEHover<CR>
+nnoremap <leader>co :ALECodeAction<CR>
+
 
 " Use <TAB> to select the popup menu:
 inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
-" open tagbar with f8
-nmap <F8> :TagbarToggle<CR>
 " enable ncm2 for all buffers
 "autocmd BufEnter * call ncm2#enable_for_buffer()
 
@@ -104,8 +129,13 @@ nmap <F8> :TagbarToggle<CR>
 
 
 "NERDtree settings
-nnoremap <leader>t :NERDTreeFocus<CR>
-nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <leader>t :NERDTreeClose<CR>
+nnoremap <C-t> :NERDTreeMirror<CR>:NERDTreeFocus<CR>
+nnoremap <leader>f :NERDTreeFind<CR>
+
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
 
 let g:Illuminate_delay = 500
 "Don't highlight word under cursor (default: 1)
@@ -118,13 +148,13 @@ syntax enable
 "let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 "set background=dark
 "hi Normal ctermbg=NONE
-colorscheme iceberg
+colorscheme monokai
 "
 "turns syntax highlighting on
 syntax on
 filetype plugin indent on
 set nocompatible
-set number
+set number relativenumber
 " space is leader
 noremap <Space> <Nop>
 map <Space> <Leader>
@@ -132,15 +162,42 @@ map <Space> <Leader>
 let python_highlight_all = 1
 
 
+lua <<EOF
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(ev)
+    vim.bo[ev.buf].formatexpr = nil
+    vim.bo[ev.buf].omnifunc = nil
+    vim.keymap.del("n", "K", { buffer = ev.buf })
+  end,
+})
+EOF
+
 " tree sitter stuff
 lua <<EOF
 require'nvim-treesitter.configs'.setup {
-  ensure_installed = "maintained", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
+  ensure_installed = "all", -- one of "all", "maintained" (parsers with maintainers), or a list of languages
   highlight = {
     enable = true,              -- false will disable the whole extension
   },
 }
 EOF
+lua <<EOF
+require'treesitter-context'.setup{
+  enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
+  max_lines = 10, -- How many lines the window should span. Values <= 0 mean no limit.
+  min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
+  line_numbers = true,
+  multiline_threshold = 3, -- Maximum number of lines to show for a single context
+  trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
+  mode = 'cursor',  -- Line used to calculate context. Choices: 'cursor', 'topline'
+  -- Separator between context and content. Should be a single character string, like '-'.
+  -- When separator is set, the context will only show up when there are at least 2 lines above cursorline.
+  separator = '-',
+  zindex = 20, -- The Z-index of the context window
+  on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
+}
+EOF
+
 
 " telescope mappings
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
@@ -181,6 +238,9 @@ nnoremap <C-J> <C-W><C-J>
 nnoremap <C-K> <C-W><C-K>
 nnoremap <C-L> <C-W><C-L>
 nnoremap <C-H> <C-W><C-H>
+" Zoom in / out of a split
+noremap ZZ <c-w>_ \| <c-w>\|
+noremap ZO <c-w>=
 
 " Enable mouse use in all modes
 set mouse=a
@@ -223,4 +283,3 @@ if argc() == 2
   n
   e #
 endif
-
