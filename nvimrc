@@ -26,9 +26,21 @@ let g:ale_floating_preview = 1
 let g:ale_cursor_detail = 1
 let g:ale_close_preview_on_insert = 1
 let g:ale_floating_window_border = ['│', '─', '╭', '╮', '╯', '╰']
+
 call plug#begin('~/.local/share/nvim/plugged')
 " pretty typing for notes etc
 Plug 'junegunn/goyo.vim'
+
+" run prettier
+Plug 'sbdchd/neoformat'
+
+" completion
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
 
 " tree sitter and telescope
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend updating the parsers on update
@@ -37,7 +49,6 @@ Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
 Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
 Plug 'ThePrimeagen/harpoon'
-
 
 
 " nerdtree
@@ -87,6 +98,116 @@ Plug 'Raimondi/delimitMate'
 
 call plug#end()
 
+" use local prettier config and run on save
+let g:neoformat_try_node_exe = 1
+autocmd BufWritePre *.js Neoformat prettier
+
+" completion setup
+lua <<EOF
+  -- Set up nvim-cmp.
+  local cmp = require'cmp'
+
+  cmp.setup({
+    snippet = {
+      -- REQUIRED - you must specify a snippet engine
+      expand = function(args)
+        vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+        -- require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+        -- require('snippy').expand_snippet(args.body) -- For `snippy` users.
+        -- vim.fn["UltiSnips#Anon"](args.body) -- For `ultisnips` users.
+      end,
+    },
+    enabled = function()
+      local in_prompt = vim.api.nvim_buf_get_option(0, 'buftype') == 'prompt'
+      if in_prompt then  -- this will disable cmp in the Telescope window (taken from the default config)
+          return false
+      end
+      local context = require("cmp.config.context")
+      return not(context.in_treesitter_capture("comment") == true or context.in_syntax_group("Comment"))
+      end,
+    window = {
+      completion = {
+        border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+        winhighlight = "Normal:CmpPmenu,FloatBorder:CmpBorder,CursorLine:PmenuSel,Search:None",
+      },
+      documentation = {
+        border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+        winhighlight = "Normal:CmpPmenu,FloatBorder:CmpBorder,CursorLine:PmenuSel,Search:None",
+      },
+      -- completion = cmp.config.window.bordered(),
+      -- documentation = cmp.config.window.bordered(),
+    },
+    performance = {
+      debounce = 60,
+      throttle = 30,
+      confirm_resolve_timeout = 80,
+      max_view_entries = 15,
+    },
+    mapping = cmp.mapping.preset.insert({
+      ['<Tab>'] = cmp.mapping.select_next_item(),
+      ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+      ['<C-Space>'] = cmp.mapping.complete(),
+      ['<C-e>'] = cmp.mapping.abort(),
+      ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    }),
+    sources = cmp.config.sources({
+      { name = 'nvim_lsp' },
+      { name = 'vsnip' }, -- For vsnip users.
+      -- { name = 'luasnip' }, -- For luasnip users.
+      -- { name = 'ultisnips' }, -- For ultisnips users.
+      -- { name = 'snippy' }, -- For snippy users.
+    }, {
+      { name = 'buffer' },
+    })
+  })
+
+
+  -- Set up lspconfig.
+  local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+  local border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" }
+  local orig_util_open_floating_preview = vim.lsp.util.open_floating_preview
+  function vim.lsp.util.open_floating_preview(contents, syntax, opts, ...)
+    opts = opts or {}
+    opts.border = opts.border or border
+    return orig_util_open_floating_preview(contents, syntax, opts, ...)
+    end
+
+
+  require('lspconfig')['tsserver'].setup {
+    capabilities = capabilities
+  }
+
+   -- Function to check if a floating dialog exists and if not
+  -- then check for diagnostics under the cursor
+  function OpenDiagnosticIfNoFloat()
+    for _, winid in pairs(vim.api.nvim_tabpage_list_wins(0)) do
+      if vim.api.nvim_win_get_config(winid).zindex then
+        return
+      end
+    end
+    -- THIS IS FOR BUILTIN LSP
+    vim.diagnostic.open_float(0, {
+      scope = "cursor",
+      focusable = false,
+      close_events = {
+        "CursorMoved",
+        "CursorMovedI",
+        "BufHidden",
+        "InsertCharPre",
+        "WinLeave",
+      },
+    })
+  end
+  -- Show diagnostics under the cursor when holding position
+  vim.api.nvim_create_augroup("lsp_diagnostics_hold", { clear = true })
+  vim.api.nvim_create_autocmd({ "CursorHold" }, {
+    pattern = "*",
+    command = "lua OpenDiagnosticIfNoFloat()",
+    group = "lsp_diagnostics_hold",
+  })
+EOF
+
 " airline
 "let g:airline_extensions = ['vimagit']
 let g:airline#extensions#vimagit#enabled = 1
@@ -111,15 +232,17 @@ let g:ale_fixers = {
 " You should not turn this setting on if you wish to use ALE as a completion
 " source for other completion plugins, like Deoplete.
 
-nnoremap <leader>sd :ALEGoToDefinition -vsplit<CR>
-nnoremap <leader>d :ALEGoToDefinition<CR>
-nnoremap <leader>a :ALEHover<CR>
-nnoremap <leader>co :ALECodeAction<CR>
+nnoremap <leader>d :lua =vim.lsp.buf.definition()<CR>
+nunmap  <leader>df
+nnoremap <leader>rn :lua =vim.lsp.buf.rename()<CR>
+nnoremap K :lua =vim.lsp.buf.hover()<CR>
+nnoremap <leader>co :lua =vim.lsp.buf.code_action()<CR>
+nnoremap <leader>rn :lua =vim.lsp.buf.rename()<CR>
 
 
 " Use <TAB> to select the popup menu:
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+"inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+"inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 
 " enable ncm2 for all buffers
 "autocmd BufEnter * call ncm2#enable_for_buffer()
@@ -158,19 +281,6 @@ set number relativenumber
 " space is leader
 noremap <Space> <Nop>
 map <Space> <Leader>
-" enable all Python syntax highlighting features
-let python_highlight_all = 1
-
-
-lua <<EOF
-vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(ev)
-    vim.bo[ev.buf].formatexpr = nil
-    vim.bo[ev.buf].omnifunc = nil
-    vim.keymap.del("n", "K", { buffer = ev.buf })
-  end,
-})
-EOF
 
 " tree sitter stuff
 lua <<EOF
@@ -184,10 +294,10 @@ EOF
 lua <<EOF
 require'treesitter-context'.setup{
   enable = true, -- Enable this plugin (Can be enabled/disabled later via commands)
-  max_lines = 10, -- How many lines the window should span. Values <= 0 mean no limit.
+  max_lines = 5, -- How many lines the window should span. Values <= 0 mean no limit.
   min_window_height = 0, -- Minimum editor window height to enable context. Values <= 0 mean no limit.
   line_numbers = true,
-  multiline_threshold = 3, -- Maximum number of lines to show for a single context
+  multiline_threshold = 1, -- Maximum number of lines to show for a single context
   trim_scope = 'outer', -- Which context lines to discard if `max_lines` is exceeded. Choices: 'inner', 'outer'
   mode = 'cursor',  -- Line used to calculate context. Choices: 'cursor', 'topline'
   -- Separator between context and content. Should be a single character string, like '-'.
@@ -196,6 +306,21 @@ require'treesitter-context'.setup{
   zindex = 20, -- The Z-index of the context window
   on_attach = nil, -- (fun(buf: integer): boolean) return false to disable attaching
 }
+
+vim.api.nvim_create_autocmd("CursorHold", {
+  buffer = bufnr,
+  callback = function()
+    local opts = {
+      focusable = false,
+      close_events = { "BufLeave", "CursorMoved", "InsertEnter", "FocusLost" },
+      border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+      source = 'always',
+      prefix = ' ',
+      scope = 'cursor',
+    }
+    vim.diagnostic.open_float(nil, opts)
+  end
+})
 EOF
 
 
@@ -203,7 +328,6 @@ EOF
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
-nnoremap <leader>df <cmd>lua require'telescope.builtin'.grep_string{}<cr>
 
 " highlight on yank
 au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
@@ -220,9 +344,6 @@ inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 nnoremap ; :
 nnoremap : ;
 
-" <leader>af to run ALEFix , <leader>aa to go to first error
-nnoremap <leader>af :ALEFix<CR>
-nnoremap <leader>aa :ALEFirst<CR>
 
 " leader r refreshes current file
 nnoremap <leader>r :e! %<CR>
