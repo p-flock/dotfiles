@@ -14,6 +14,11 @@ set noswapfile
 set ignorecase
 set smartcase
 
+set updatetime=500
+" normal copy
+xnoremap <C-c> "*y :let @+=@*<CR>
+
+
 
 " save files when focus is lost
 filetype on                  " required
@@ -100,7 +105,6 @@ call plug#end()
 
 " use local prettier config and run on save
 let g:neoformat_try_node_exe = 1
-autocmd BufWritePre *.js Neoformat prettier
 
 " completion setup
 lua <<EOF
@@ -233,7 +237,7 @@ let g:ale_fixers = {
 " source for other completion plugins, like Deoplete.
 
 nnoremap <leader>d :lua =vim.lsp.buf.definition()<CR>
-nunmap  <leader>df
+nnoremap <leader>s :vsplit<CR> :lua =vim.lsp.buf.definition()<CR>
 nnoremap <leader>rn :lua =vim.lsp.buf.rename()<CR>
 nnoremap K :lua =vim.lsp.buf.hover()<CR>
 nnoremap <leader>co :lua =vim.lsp.buf.code_action()<CR>
@@ -388,6 +392,12 @@ set tabstop=2
 " split management
 set splitbelow
 set splitright
+
+"format on save
+augroup fmt
+  autocmd!
+  autocmd BufWritePre *.ts | Neoformat
+augroup END
 
 
 " netrw / file browser stuff

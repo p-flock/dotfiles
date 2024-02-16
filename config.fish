@@ -2,7 +2,7 @@ set -g __fish_git_prompt_show_informative_status 0
 set -g __fish_git_prompt_hide_untrackedfiles 1
 
 set -g __fish_git_prompt_color_branch magenta
-set -g __fish_git_prompt_showupstream "informative"
+set -g __fish_git_prompt_showupstream informative
 set -g __fish_git_prompt_char_upstream_ahead "↑"
 set -g __fish_git_prompt_char_upstream_behind "↓"
 set -g __fish_git_prompt_char_upstream_prefix ""
@@ -22,76 +22,88 @@ set -g __fish_git_prompt_color_cleanstate green
 alias cat="bat"
 
 function nv
-  nvim
+    nvim
 end
 
 function fix
-  git commit --fixup HEAD
+    git commit --fixup HEAD
 end
 
 function cover
-  open coverage/index.html
+    open coverage/index.html
 end
 
 function s
-  git status
+    git status
 end
 
 function gl
-  git log
+    git log
 end
 
 function glo
-  git log --oneline
+    git log --oneline
 end
 
 function vimlog
-  git log | nvim -R -
+    git log | nvim -R -
 end
 
 function stash
-  git stash
+    git stash
 end
 
 function apply
-  git stash apply
+    git stash apply
 end
 
 function lsd
-  ls -d */
+    ls -d */
 end
 
 function dockerize
-  docker run --rm -it -v $PWD:$PWD -w $PWD ubuntu bash
+    docker run --rm -it -v $PWD:$PWD -w $PWD ubuntu bash
 end
 
 function vlc
-  nvim -O (git log --pretty=format: --name-only -n 1)
+    nvim -O (git log --pretty=format: --name-only -n 1)
 end
 
 function gsup
-  set BRANCH (git rev-parse --abbrev-ref HEAD 2>/dev/null);
-  git push --set-upstream origin $BRANCH
+    set BRANCH (git rev-parse --abbrev-ref HEAD 2>/dev/null)
+    git push --set-upstream origin $BRANCH
 end
 
 function gpr
-  gsup
-  git pull-request -o -c
+    gsup
+    git pull-request -o -c
+end
+
+function rebase
+    set stash_ref (git stash create)
+    git restore .
+    git checkout main
+    git pull
+    git checkout -
+    git rebase main
+    if [ "$stash_ref" != "" ]
+      git stash apply "$stash_ref"
+    end
 end
 
 
 function fish_prompt
-      set_color FF0
-      echo '│'  (pwd) '>'
-      echo -n '│ '
-      set_color normal
+    set_color FF0
+    echo '│' (pwd) '>'
+    echo -n '│ '
+    set_color normal
 end
 
 function fish_greeting
-      set_color purple
-      echo
-      echo "W̶̥̫̥͆ḛ̸̥̿ͅḽ̵̻͓̋̀͝c̶͙͈̗͛̐̀̏o̵̿̈́̄̉̚͜m̴̼̟̘̼̓ẹ̶̡͔͂̉̊̃͜͝ ̷̛̯̯̏Ḫ̵̣̫͒̽ó̵̯̽̕m̴̯̚e̷̺̝̦͒͋́͑:" (date)
-      echo
+    set_color purple
+    echo
+    echo "W̶̥̫̥͆ḛ̸̥̿ͅḽ̵̻͓̋̀͝c̶͙͈̗͛̐̀̏o̵̿̈́̄̉̚͜m̴̼̟̘̼̓ẹ̶̡͔͂̉̊̃͜͝ ̷̛̯̯̏Ḫ̵̣̫͒̽ó̵̯̽̕m̴̯̚e̷̺̝̦͒͋́͑:" (date)
+    echo
 end
 
 set PATH /usr/local/opt/gnu-sed/libexec/gnubin:$PATH
