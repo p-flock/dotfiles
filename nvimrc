@@ -24,13 +24,6 @@ xnoremap <C-c> "*y :let @+=@*<CR>
 filetype on                  " required
 
 
-let g:ale_set_balloons = 1
-let g:ale_hover_cursor = 1
-let g:ale_hover_to_floating_preview = 1
-let g:ale_floating_preview = 1
-let g:ale_cursor_detail = 1
-let g:ale_close_preview_on_insert = 1
-let g:ale_floating_window_border = ['│', '─', '╭', '╮', '╯', '╰']
 
 call plug#begin('~/.local/share/nvim/plugged')
 " pretty typing for notes etc
@@ -38,6 +31,13 @@ Plug 'junegunn/goyo.vim'
 
 " run prettier
 Plug 'sbdchd/neoformat'
+
+" lint support with built-in language server
+Plug 'mfussenegger/nvim-lint'
+
+" jsx ugh
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
 
 " completion
 Plug 'neovim/nvim-lspconfig'
@@ -52,14 +52,20 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend upda
 Plug 'nvim-treesitter/nvim-treesitter-context'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.1' }
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.6' }
 Plug 'ThePrimeagen/harpoon'
+
+" Generate github links to code snippets
+Plug 'ruifm/gitlinker.nvim'
 
 
 " nerdtree
 Plug 'preservim/nerdtree'
 "comment me
 Plug 'scrooloose/nerdcommenter'
+
+" Copilot
+Plug 'github/copilot.vim'
 
 " colo scheme
 Plug 'morhetz/gruvbox'
@@ -85,13 +91,10 @@ Plug 'roxma/nvim-yarp'
 "Plug 'ncm2/ncm2-path'
 "Plug 'ncm2/ncm2-tern',  {'do':'npm install'}
 
-Plug 'vim-airline/vim-airline'
 " vim wiki
 Plug 'https://github.com/vimwiki/vimwiki'
 
 "Plug 'RRethy/vim-illuminate'
-"linting
-Plug 'dense-analysis/ale'
 
 "ctags viewing
 Plug 'majutsushi/tagbar'
@@ -181,6 +184,9 @@ lua <<EOF
   require('lspconfig')['tsserver'].setup {
     capabilities = capabilities
   }
+  require('lspconfig')['pyright'].setup {
+    capabilities = capabilities
+  }
 
    -- Function to check if a floating dialog exists and if not
   -- then check for diagnostics under the cursor
@@ -210,38 +216,35 @@ lua <<EOF
     command = "lua OpenDiagnosticIfNoFloat()",
     group = "lsp_diagnostics_hold",
   })
+
+  -- set up eslint for js and ts
+  require('lint').linters_by_ft = {
+     javascript = {'eslint'},
+     typescript = {'eslint'},
+     javascriptreact = {'eslint'},
+     typescriptreact = {'eslint'}
+  }
+
 EOF
 
-" airline
-"let g:airline_extensions = ['vimagit']
-let g:airline#extensions#vimagit#enabled = 1
-let g:airline#extensions#fugitive = 1
 
 let js_fixers = ['prettier', 'eslint']
 
-let g:ale_fixers = {
-\   '*': ['remove_trailing_lines', 'trim_whitespace'],
-\   'javascript': js_fixers,
-\   'javascript.jsx': js_fixers,
-\   'typescript': js_fixers,
-\   'typescriptreact': js_fixers,
-\   'css': ['prettier'],
-\   'json': ['prettier'],
-\}
 
 
-" Enable completion where available.
-" This setting must be set before ALE is loaded.
-"
-" You should not turn this setting on if you wish to use ALE as a completion
-" source for other completion plugins, like Deoplete.
 
 nnoremap <leader>d :lua =vim.lsp.buf.definition()<CR>
 nnoremap <leader>s :vsplit<CR> :lua =vim.lsp.buf.definition()<CR>
 nnoremap <leader>rn :lua =vim.lsp.buf.rename()<CR>
 nnoremap K :lua =vim.lsp.buf.hover()<CR>
 nnoremap <leader>co :lua =vim.lsp.buf.code_action()<CR>
-nnoremap <leader>rn :lua =vim.lsp.buf.rename()<CR>
+nnoremap <leader>rf :lua =vim.lsp.buf.references()<CR>
+nnoremap <leader>l :LspRestart<CR>
+
+
+" Harpoon commands
+nnoremap <leader>h :lua require("harpoon.ui").toggle_quick_menu()<CR>
+nnoremap <leader>a :lua require("harpoon.mark").add_file()<CR>
 
 
 " Use <TAB> to select the popup menu:
@@ -258,7 +261,7 @@ nnoremap <leader>rn :lua =vim.lsp.buf.rename()<CR>
 "NERDtree settings
 nnoremap <leader>t :NERDTreeClose<CR>
 nnoremap <C-t> :NERDTreeMirror<CR>:NERDTreeFocus<CR>
-nnoremap <leader>f :NERDTreeFind<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
 
 " Exit Vim if NERDTree is the only window remaining in the only tab.
 autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
@@ -325,6 +328,8 @@ vim.api.nvim_create_autocmd("CursorHold", {
     vim.diagnostic.open_float(nil, opts)
   end
 })
+
+require"gitlinker".setup()
 EOF
 
 
@@ -366,6 +371,9 @@ nnoremap <C-H> <C-W><C-H>
 " Zoom in / out of a split
 noremap ZZ <c-w>_ \| <c-w>\|
 noremap ZO <c-w>=
+" move through quickfix/reference list
+nnoremap <C-o> :cn<CR>
+nnoremap <C-p> :cp<CR>
 
 " Enable mouse use in all modes
 set mouse=a
@@ -389,6 +397,8 @@ set shiftwidth=2
 set softtabstop=2
 set tabstop=2
 
+set textwidth=80
+
 " split management
 set splitbelow
 set splitright
@@ -396,8 +406,10 @@ set splitright
 "format on save
 augroup fmt
   autocmd!
-  autocmd BufWritePre *.ts | Neoformat
+  autocmd BufWritePre *.ts* undojoin | Neoformat
 augroup END
+
+au BufWritePost * lua require('lint').try_lint()
 
 
 " netrw / file browser stuff

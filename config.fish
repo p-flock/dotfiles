@@ -29,6 +29,18 @@ function fix
     git commit --fixup HEAD
 end
 
+function fp
+    git push -f
+end
+
+function gp
+    git pull
+end
+
+function am
+  git commit --amend --no-edit
+end
+
 function cover
     open coverage/index.html
 end
@@ -79,6 +91,10 @@ function gpr
     git pull-request -o -c
 end
 
+function mydiff
+  GIT_EXTERNAL_DIFF=difft git log -p --ext-diff
+end
+
 function rebase
     set stash_ref (git stash create)
     git restore .
@@ -106,9 +122,31 @@ function fish_greeting
     echo
 end
 
+
+# tte slide is very slow unfortunately, so this is annoying
+# when frequently opening terminals
+#function fish_greeting
+    #set_color purple
+    #echo
+    #echo "W̶̥̫̥͆ḛ̸̥̿ͅḽ̵̻͓̋̀͝c̶͙͈̗͛̐̀̏o̵̿̈́̄̉̚͜m̴̼̟̘̼̓ẹ̶̡͔͂̉̊̃͜͝ ̷̛̯̯̏Ḫ̵̣̫͒̽ó̵̯̽̕m̴̯̚e̷̺̝̦͒͋́͑:" (date)
+    #echo
+    #echo "
+            #__..--''``---....___   _..._    __
+ #/// //_.-'    .-/\";  `        ``<._  ``.''_ `. / // /
+#///_.-' _..--.'_    \                    `( ) ) // //
+#/ (_..-' // (< _     ;_..__               ; `' / ///
+ #/ // // //  `-._,_)' // / ``--...____..-' /// / //
+
+    #" | tte slide
+#end
+
 set PATH /usr/local/opt/gnu-sed/libexec/gnubin:$PATH
 set PATH $HOME/.cargo/bin $PATH
+fish_add_path ./node_modules/.bin
 
 # Setting PATH for Python 3.9
 # The original version is saved in /Users/pflockhart/.config/fish/config.fish.pysave
 set -x PATH "/Library/Frameworks/Python.framework/Versions/3.9/bin" "$PATH"
+
+# Created by `pipx` on 2024-05-29 19:21:24
+set PATH $PATH /Users/peterflockhart/.local/bin
