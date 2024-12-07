@@ -52,7 +52,7 @@ Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}  " We recommend upda
 Plug 'nvim-treesitter/nvim-treesitter-context'
 Plug 'nvim-lua/popup.nvim'
 Plug 'nvim-lua/plenary.nvim'
-Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.6' }
+Plug 'nvim-telescope/telescope.nvim', { 'tag': '0.1.8' }
 Plug 'ThePrimeagen/harpoon'
 
 " Generate github links to code snippets
@@ -65,7 +65,7 @@ Plug 'preservim/nerdtree'
 Plug 'scrooloose/nerdcommenter'
 
 " Copilot
-Plug 'github/copilot.vim'
+"Plug 'github/copilot.vim'
 
 " colo scheme
 Plug 'morhetz/gruvbox'
@@ -181,7 +181,7 @@ lua <<EOF
     end
 
 
-  require('lspconfig')['tsserver'].setup {
+  require('lspconfig')['ts_ls'].setup {
     capabilities = capabilities
   }
   require('lspconfig')['pyright'].setup {
@@ -337,6 +337,7 @@ EOF
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
 nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
+nnoremap <leader>fl <cmd>Telescope resume<cr>
 
 " highlight on yank
 au TextYankPost * lua vim.highlight.on_yank {higroup="IncSearch", timeout=150, on_visual=true}
